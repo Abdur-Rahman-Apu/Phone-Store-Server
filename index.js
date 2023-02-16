@@ -10,6 +10,8 @@ app.use(express.json())
 
 require('dotenv').config()
 
+var jwt = require('jsonwebtoken');
+
 const port = process.env.PORT || 5000
 
 app.get('/', async (req, res) => {
@@ -29,6 +31,13 @@ async function run() {
 
 
     const categoriesCollection = client.db("phonesStore").collection("categories")
+
+
+    app.post('/jwt', async (req, res) => {
+        const data = req.body;
+        const token = jwt.sign(data, process.env.ACCESS_TOKEN, { expiresIn: '24h' });
+        res.send({ token })
+    })
 
     app.get('/categories', async (req, res) => {
         const cursor = categoriesCollection.find({})
