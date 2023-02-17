@@ -68,6 +68,18 @@ async function run() {
         const result = await userCollection.insertOne(data)
         res.send(result)
     })
+
+    app.get('/user', async (req, res) => {
+        const query = req.query.email;
+
+        console.log(query);
+        const result = await userCollection.findOne({ email: query })
+        if (result.email === query) {
+            res.send({ result: 1 })
+        } else {
+            res.send({ result: 0 })
+        }
+    })
 }
 
 run().catch(error => { console.log(error); })
