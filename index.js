@@ -48,6 +48,7 @@ async function run() {
 
 
     const categoriesCollection = client.db("phonesStore").collection("categories")
+    const userCollection = client.db("phonesStore").collection("users")
 
 
     app.post('/jwt', async (req, res) => {
@@ -59,6 +60,12 @@ async function run() {
     app.get('/categories', async (req, res) => {
         const cursor = categoriesCollection.find({})
         const result = await cursor.toArray()
+        res.send(result)
+    })
+
+    app.post('/users', async (req, res) => {
+        const data = req.body;
+        const result = await userCollection.insertOne(data)
         res.send(result)
     })
 }
