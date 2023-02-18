@@ -23,7 +23,7 @@ app.listen(port, () => {
 })
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.7kbtzra.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -118,6 +118,16 @@ async function run() {
         res.send(product)
 
     })
+
+    //productDetails  api
+    app.get('/product/:id', async (req, res) => {
+        console.log("product", req);
+        const id = req.params.id;
+
+        const product = await productCollection.findOne({ _id: new ObjectId(id) })
+        res.send(product)
+    })
+
 
 }
 
