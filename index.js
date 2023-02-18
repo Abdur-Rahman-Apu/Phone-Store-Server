@@ -91,6 +91,24 @@ async function run() {
         res.send(result)
     })
 
+    app.get('/products', async (req, res) => {
+        const query = productCollection.find({})
+        const allProducts = await query.toArray()
+
+        const android = allProducts.filter(product => product.category === 'Android')
+        const iphone = allProducts.filter(product => product.category === 'Iphone')
+        const button = allProducts.filter(product => product.category === 'Button')
+
+        const product = {
+            android,
+            iphone,
+            button
+        }
+
+        res.send(product)
+
+    })
+
 }
 
 run().catch(error => { console.log(error); })
