@@ -49,6 +49,7 @@ async function run() {
 
     const categoriesCollection = client.db("phonesStore").collection("categories")
     const userCollection = client.db("phonesStore").collection("users")
+    const productCollection = client.db("phonesStore").collection("products")
 
 
     app.post('/jwt', async (req, res) => {
@@ -63,6 +64,7 @@ async function run() {
         res.send(result)
     })
 
+    // users 
     app.post('/users', async (req, res) => {
         const data = req.body;
         const result = await userCollection.insertOne(data)
@@ -74,7 +76,7 @@ async function run() {
 
         console.log(query);
         const result = await userCollection.findOne({ email: query })
-        if (result.email === query) {
+        if (result?.email === query) {
             res.send({ result: 1, role: result.role })
         } else {
             res.send({ result: 0, role: null })
@@ -82,6 +84,12 @@ async function run() {
     })
 
 
+    // products 
+    app.post('/products', verifyJWT, async (req, res) => {
+        const data = req.body;
+        const result = await productCollection.insertOne(data)
+        res.send(result)
+    })
 
 }
 
