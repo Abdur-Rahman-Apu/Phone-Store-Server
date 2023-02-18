@@ -87,7 +87,7 @@ async function run() {
         console.log(query);
         const result = await userCollection.findOne({ email: query })
         if (result?.email === query) {
-            res.send({ result: 1, role: result.role })
+            res.send({ result: 1, role: result?.role, user: result })
         } else {
             res.send({ result: 0, role: null })
         }
