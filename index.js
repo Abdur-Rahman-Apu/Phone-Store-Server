@@ -128,6 +128,46 @@ async function run() {
         res.send(product)
     })
 
+    //book
+    app.put('/booking', verifyJWT, async (req, res) => {
+
+        let previousBookedItems = []
+
+        //buyer email
+        const filter = { email: req.query.email };
+
+        const result = await userCollection.findOne(filter)
+
+        //item info
+        const itemData = {
+            productId: req.body._id,
+        };
+
+
+
+        // booked key present or not 
+        if (result?.booked) {
+            previousBookedItems = previousBookedItems.concat(result?.booked)
+        }
+
+        previousBookedItems = previousBookedItems.concat(itemData)
+
+
+
+        //update things
+
+        const options = { upsert: true };
+        const updateDoc = {
+            $set: {
+                booked: previousBookedItems
+            },
+        };
+
+        const booked = await userCollection.updateOne(filter, updateDoc, options);
+
+        res.send(booked)
+    })
+
 
 }
 
