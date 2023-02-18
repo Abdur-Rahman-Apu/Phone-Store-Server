@@ -71,6 +71,16 @@ async function run() {
         res.send(result)
     })
 
+    app.get('/users', async (req, res) => {
+        const cursor = userCollection.find({})
+        const result = await cursor.toArray()
+
+        res.send({
+            seller: result.filter(data => data?.role === 'Seller'),
+            customer: result.filter(data => data?.role === 'Customer')
+        })
+    })
+
     app.get('/user', async (req, res) => {
         const query = req.query.email;
 
