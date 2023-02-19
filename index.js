@@ -348,6 +348,13 @@ async function run() {
         res.send(deleteFromProducts)
     })
 
+
+    app.get('allPaid', async (req, res) => {
+        const cursor = paidCollection.find({})
+        const result = await cursor.toArray()
+        res.send({ count: result.length })
+    })
+
 }
 
 run().catch(error => { console.log(error); })
