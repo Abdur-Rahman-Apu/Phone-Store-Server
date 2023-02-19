@@ -246,6 +246,19 @@ async function run() {
         res.send(result)
     })
 
+    //all paid items
+    app.get('/allPaid', async (req, res) => {
+        const sellerEmail = req.query.email;
+
+        const cursor = paidCollection.find({})
+        const allPaidProducts = await cursor.toArray()
+
+        const specificSellerPaidProducts = allPaidProducts.filter(item => item.productInfo.sellerEmail === sellerEmail)
+
+        res.send(specificSellerPaidProducts)
+
+    })
+
 
     // delete from cart 
     app.delete('/deleteCartItem', async (req, res) => {
