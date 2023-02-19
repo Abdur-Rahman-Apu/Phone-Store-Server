@@ -349,7 +349,7 @@ async function run() {
     })
 
 
-    app.get('allPaid', async (req, res) => {
+    app.get('/allPaidItems', async (req, res) => {
         const cursor = paidCollection.find({})
         const result = await cursor.toArray()
         res.send({ count: result.length })
