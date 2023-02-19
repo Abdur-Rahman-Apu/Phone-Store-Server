@@ -158,7 +158,6 @@ async function run() {
         previousBookedItems = previousBookedItems.concat(itemData)
 
 
-
         //update things
 
         const options = { upsert: true };
@@ -171,6 +170,25 @@ async function run() {
         const booked = await userCollection.updateOne(filter, updateDoc, options);
 
         res.send(booked)
+    })
+
+
+    // all booked items
+    app.get('/bookedItems', async (req, res) => {
+        const cursor = userCollection.find({})
+        const allUser = await cursor.toArray()
+
+
+
+        const hasBookedUser = allUser.filter(item => item.booked)
+
+
+        let totalBooked = []
+
+        for (item of hasBookedUser) {
+            totalBooked = [...totalBooked, ...item.booked]
+        }
+        res.send(totalBooked);
     })
 
     //payment
@@ -249,6 +267,16 @@ async function run() {
 
         res.send(updateData)
 
+    })
+
+    //get bought item
+    app.get('/boughtItem', async (req, res) => {
+        const email = req.query.email;
+        const filter = { buyerEmail: email }
+        const cursor = paidCollection.find(filter)
+        const boughtItem = await cursor.toArray()
+
+        res.send(boughtItem)
     })
 
 }
