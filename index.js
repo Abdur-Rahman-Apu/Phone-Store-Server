@@ -292,6 +292,7 @@ async function run() {
         res.send(boughtItem)
     })
 
+    // seller 
 
     // advertise item
     app.put('/advertise/:id', async (req, res) => {
@@ -306,6 +307,45 @@ async function run() {
 
         const updateData = await productCollection.updateOne(filter, updateDoc)
         res.send(updateData)
+    })
+
+    // seller item delete
+    app.delete('/deleteItem/:id', async (req, res) => {
+        const id = req.params.id;
+        const deleteFromProducts = await productCollection.deleteOne({ _id: new ObjectId(id) })
+
+        const cursor = userCollection.find({})
+        const allUser = await cursor.toArray()
+
+        console.log(allUser);
+
+        for (const user of allUser) {
+            if (user?.booked) {
+                const booked = user?.booked;
+
+                console.log(booked);
+                const desiredItem = booked.find(item => item?.productId === id)
+                console.log(desiredItem);
+
+                if (desiredItem) {
+                    const updateBookItem = booked?.filter(item => item.productId !== id)
+
+                    console.log("Update", updateBookItem);
+                    const updateDoc = {
+                        $set: {
+                            booked: updateBookItem
+                        }
+                    }
+
+                    const result = await userCollection.updateOne({ _id: new ObjectId(user._id) }, updateDoc)
+
+                    res.send(result)
+
+                }
+            }
+        }
+
+
     })
 
 }
