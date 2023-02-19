@@ -200,6 +200,8 @@ async function run() {
     app.post('/paid', async (req, res) => {
         const paymentInfo = req.body;
         console.log(paymentInfo);
+
+
         const item = await paidCollection.insertOne(paymentInfo)
         const email = paymentInfo.buyerEmail;
         const productId = paymentInfo.productInfo._id;
@@ -219,7 +221,10 @@ async function run() {
             },
         };
 
+
         const result = await userCollection.updateOne({ email }, updateDoc);
+
+        const deleteProduct = await productCollection.deleteOne({ _id: new ObjectId(productId) })
         res.send(result)
     })
 
