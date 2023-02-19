@@ -14,6 +14,10 @@ var jwt = require('jsonwebtoken');
 
 const port = process.env.PORT || 5000
 
+const stripe = require("stripe")(process.env.STRIPE_SK);
+
+console.log(process.env.STRIPE_SK);
+
 app.get('/', async (req, res) => {
     res.send('Server is running');
 })
@@ -121,7 +125,7 @@ async function run() {
 
     //productDetails  api
     app.get('/product/:id', async (req, res) => {
-        console.log("product", req);
+
         const id = req.params.id;
 
         const product = await productCollection.findOne({ _id: new ObjectId(id) })
@@ -169,7 +173,28 @@ async function run() {
     })
 
     //payment
+    app.post("/create-payment-intent", async (req, res) => {
+        const product = req.body;
 
+        const amount = Number(product.productPrice) * 100
+
+        console.log("Amount", amount);
+        console.log(typeof amount);
+        // Create a PaymentIntent with the order amount and currency
+        if (amount) {
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: "usd",
+                "payment_method_types": [
+                    "card"
+                ]
+            });
+
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        }
+    });
 
 }
 
