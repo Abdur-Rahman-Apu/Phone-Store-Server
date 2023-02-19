@@ -339,13 +339,13 @@ async function run() {
 
                     const result = await userCollection.updateOne({ _id: new ObjectId(user._id) }, updateDoc)
 
-                    res.send(result)
+                    break
 
                 }
             }
         }
 
-
+        res.send(deleteFromProducts)
     })
 
 }
