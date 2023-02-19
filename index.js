@@ -292,6 +292,22 @@ async function run() {
         res.send(boughtItem)
     })
 
+
+    // advertise item
+    app.put('/advertise/:id', async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) }
+
+        const updateDoc = {
+            $set: {
+                advertise: 1
+            }
+        }
+
+        const updateData = await productCollection.updateOne(filter, updateDoc)
+        res.send(updateData)
+    })
+
 }
 
 run().catch(error => { console.log(error); })
