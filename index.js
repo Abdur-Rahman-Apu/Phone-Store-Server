@@ -54,6 +54,7 @@ async function run() {
     const categoriesCollection = client.db("phonesStore").collection("categories")
     const userCollection = client.db("phonesStore").collection("users")
     const productCollection = client.db("phonesStore").collection("products")
+    const paidCollection = client.db("phonesStore").collection("paid")
 
 
     app.post('/jwt', async (req, res) => {
@@ -195,6 +196,32 @@ async function run() {
             });
         }
     });
+
+    app.post('/paid', async (req, res) => {
+        const paymentInfo = req.body;
+        console.log(paymentInfo);
+        const item = await paidCollection.insertOne(paymentInfo)
+        const email = paymentInfo.buyerEmail;
+        const productId = paymentInfo.productInfo._id;
+
+        console.log("Product id", productId);
+
+        const user = await userCollection.findOne({ email })
+        console.log(user);
+
+        const prevBooked = user?.booked;
+
+        const newBooked = prevBooked.filter(item => item.productId !== productId)
+
+        const updateDoc = {
+            $set: {
+                booked: newBooked
+            },
+        };
+
+        const result = await userCollection.updateOne({ email }, updateDoc);
+        res.send(result)
+    })
 
 }
 
