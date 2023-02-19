@@ -228,6 +228,29 @@ async function run() {
         res.send(result)
     })
 
+
+    // delete from cart 
+    app.delete('/deleteCartItem', async (req, res) => {
+        const userEmail = req.query.email;
+        const productId = req.query.productId;
+
+        const userInfo = await userCollection.findOne({ email: userEmail })
+
+        const prevBooked = userInfo.booked;
+        const newBooked = prevBooked.filter(item => item.productId !== productId)
+
+        const updateDoc = {
+            $set: {
+                booked: newBooked
+            },
+        };
+
+        const updateData = await userCollection.updateOne({ email: userEmail }, updateDoc)
+
+        res.send(updateData)
+
+    })
+
 }
 
 run().catch(error => { console.log(error); })
