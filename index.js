@@ -369,6 +369,13 @@ async function run() {
         res.send(result)
     })
 
+    // delete buyer 
+    app.delete('/deleteBuyer/:id', async (req, res) => {
+        const id = req.params.id;
+        const result = await userCollection.deleteOne({ _id: new ObjectId(id) })
+        res.send(result)
+    })
+
 }
 
 run().catch(error => { console.log(error); })
