@@ -355,6 +355,20 @@ async function run() {
         res.send({ count: result.length })
     })
 
+
+    //delete seller
+    app.delete('/deleteSeller/:id', async (req, res) => {
+        const id = req.params.id;
+        const sellerInfo = await userCollection.findOne({ _id: new ObjectId(id) })
+
+        const sellerEmail = sellerInfo.email;
+
+        const sellerProduct = await productCollection.deleteMany({ sellerEmail: sellerEmail })
+        const result = await userCollection.deleteOne({ _id: new ObjectId(id) })
+
+        res.send(result)
+    })
+
 }
 
 run().catch(error => { console.log(error); })
