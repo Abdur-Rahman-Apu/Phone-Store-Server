@@ -16,8 +16,6 @@ const port = process.env.PORT || 5000
 
 const stripe = require("stripe")(process.env.STRIPE_SK);
 
-console.log(process.env.STRIPE_SK);
-
 app.get('/', async (req, res) => {
     res.send('Server is running');
 })
@@ -50,7 +48,7 @@ function verifyJWT(req, res, next) {
 
 async function run() {
 
-
+    // all collections
     const categoriesCollection = client.db("phonesStore").collection("categories")
     const userCollection = client.db("phonesStore").collection("users")
     const productCollection = client.db("phonesStore").collection("products")
@@ -89,7 +87,6 @@ async function run() {
     app.get('/user', async (req, res) => {
         const query = req.query.email;
 
-        console.log(query);
         const result = await userCollection.findOne({ email: query })
         if (result?.email === query) {
             res.send({ result: 1, role: result?.role, user: result })
@@ -148,8 +145,6 @@ async function run() {
             productId: req.body._id,
         };
 
-
-
         // booked key present or not 
         if (result?.booked) {
             previousBookedItems = previousBookedItems.concat(result?.booked)
@@ -159,7 +154,6 @@ async function run() {
 
 
         //update things
-
         const options = { upsert: true };
         const updateDoc = {
             $set: {
@@ -177,11 +171,7 @@ async function run() {
     app.get('/bookedItems', async (req, res) => {
         const cursor = userCollection.find({})
         const allUser = await cursor.toArray()
-
-
-
         const hasBookedUser = allUser.filter(item => item.booked)
-
 
         let totalBooked = []
 
@@ -197,8 +187,6 @@ async function run() {
 
         const amount = Number(product.productPrice) * 100
 
-        console.log("Amount", amount);
-        console.log(typeof amount);
         // Create a PaymentIntent with the order amount and currency
         if (amount) {
             const paymentIntent = await stripe.paymentIntents.create({
@@ -217,17 +205,12 @@ async function run() {
 
     app.post('/paid', async (req, res) => {
         const paymentInfo = req.body;
-        console.log(paymentInfo);
-
 
         const item = await paidCollection.insertOne(paymentInfo)
         const email = paymentInfo.buyerEmail;
         const productId = paymentInfo.productInfo._id;
 
-        console.log("Product id", productId);
-
         const user = await userCollection.findOne({ email })
-        console.log(user);
 
         const prevBooked = user?.booked;
 
@@ -238,7 +221,6 @@ async function run() {
                 booked: newBooked
             },
         };
-
 
         const result = await userCollection.updateOne({ email }, updateDoc);
 
@@ -317,20 +299,15 @@ async function run() {
         const cursor = userCollection.find({})
         const allUser = await cursor.toArray()
 
-        console.log(allUser);
-
         for (const user of allUser) {
             if (user?.booked) {
                 const booked = user?.booked;
 
-                console.log(booked);
                 const desiredItem = booked.find(item => item?.productId === id)
-                console.log(desiredItem);
 
                 if (desiredItem) {
                     const updateBookItem = booked?.filter(item => item.productId !== id)
 
-                    console.log("Update", updateBookItem);
                     const updateDoc = {
                         $set: {
                             booked: updateBookItem
